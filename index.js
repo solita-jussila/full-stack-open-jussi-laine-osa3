@@ -58,6 +58,26 @@ function getRandomInt(max) {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'Name is missing'
+    });
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'Number is missing'
+    });
+  }
+
+  const existingName = persons.find((person) => person.name === body.name);
+
+  if (existingName) {
+    return response.status(400).json({
+      error: 'Name must be unique'
+    });
+  }
+
   const newPerson = {
     name: body.name,
     number: body.number,
