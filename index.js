@@ -5,7 +5,23 @@ const app = express();
 
 app.use(express.json());
 
-app.use(morgan('tiny'));
+morgan.token('body', function (req) {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body);
+  }
+  return '';
+});
+
+app.use(morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+    tokens.body(req, res),
+  ].join(' ');
+}));
 
 let persons = [
   {
